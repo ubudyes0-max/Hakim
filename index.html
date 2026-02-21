@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nasehat Rezeki - Kesimpulan</title>
+    <style>
+        :root {
+            --bg-color: #0a0a0a;
+            --text-dim: rgba(255, 255, 255, 0.1);
+            --text-active: #ffffff;
+            --accent: #d4af37;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-active);
+            font-family: 'Georgia', serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        #overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 1.5s ease;
+        }
+
+        #start-btn {
+            padding: 15px 40px;
+            font-size: 1rem;
+            background: none;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            cursor: pointer;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .container {
+            width: 85%;
+            max-width: 500px;
+            padding: 50vh 0; 
+            text-align: center;
+        }
+
+        .lyric-line {
+            display: block;
+            margin-bottom: 80px;
+            font-size: 1.5rem;
+            opacity: 0.1;
+            filter: blur(8px);
+            transition: all 1.2s ease;
+            transform: scale(0.9);
+        }
+
+        .lyric-line.active {
+            opacity: 1;
+            filter: blur(0);
+            transform: scale(1.05);
+            color: var(--text-active);
+        }
+
+        /* Styling Kesimpulan */
+        #conclusion {
+            margin-top: 100px;
+            padding: 40px 20px;
+            border-top: 1px solid rgba(212, 175, 55, 0.3);
+            opacity: 0;
+            filter: blur(10px);
+            transition: all 3s ease; /* Muncul sangat pelan */
+            transform: translateY(30px);
+        }
+
+        #conclusion.show {
+            opacity: 1;
+            filter: blur(0);
+            transform: translateY(0);
+        }
+
+        .concl-title {
+            color: var(--accent);
+            font-size: 0.9rem;
+            letter-spacing: 5px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .concl-text {
+            font-style: italic;
+            font-size: 1.3rem;
+            line-height: 2;
+            color: #ccc;
+        }
+
+        audio { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="overlay">
+        <button id="start-btn">Buka Hati & Dengarkan</button>
+    </div>
+
+    <div class="container" id="main-content">
+        <div id="lyrics">
+            <span class="lyric-line" data-start="0.1">"Dahulu aku shalat Dhuha agar rezekiku lancar..."</span>
+            <span class="lyric-line" data-start="5.5">"Setelah aku belajar rezeki, ternyata shalat Dhuha itu adalah rezeki yang lebih besar daripada permintaanku."</span>
+            <span class="lyric-line" data-start="12.0">"Kadang kita beribadah, kita berdoa untuk mendapatkan pencapaian dunia..."</span>
+            <span class="lyric-line" data-start="17.5">"Padahal ibadah itu adalah pencapaian dunia terbesar."</span>
+            <span class="lyric-line" data-start="21.5">"Ibadah kita pun itu rezeki. <br>Shalat Subuh kita tadi pagi rezeki, Shalat Zuhur kita nanti rezeki."</span>
+            <span class="lyric-line" data-start="26.5">"Puasa Ramadhan kita ini rezeki."</span>
+            <span class="lyric-line" data-start="30.5">"Tidak semua orang diberi kesempatan untuk berpuasa, sahur, berbuka, dan berhari raya bersama keluarga."</span>
+            <span class="lyric-line" data-start="43.0">"Dan itu adalah kenikmatan. <br>Dan itu rezeki juga."</span>
+        </div>
+
+        <div id="conclusion">
+            <span class="concl-title">KESIMPULAN</span>
+            <p class="concl-text">
+                "Rezeki bukan hanya tentang apa yang kita miliki, <br> 
+                tapi tentang kesempatan untuk bersujud kepada-Nya. <br>
+                Syukuri ibadahmu, karena itulah harta yang sesungguhnya."
+            </p>
+        </div>
+    </div>
+
+    <audio id="player">
+        <source src="147074.mp4" type="audio/mp4">
+    </audio>
+
+    <script>
+        const player = document.getElementById('player');
+        const overlay = document.getElementById('overlay');
+        const startBtn = document.getElementById('start-btn');
+        const lines = document.querySelectorAll('.lyric-line');
+        const conclusion = document.getElementById('conclusion');
+        const lyricsContainer = document.getElementById('lyrics');
+
+        startBtn.addEventListener('click', () => {
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.style.display = 'none', 1500);
+            player.play();
+        });
+
+        player.addEventListener('timeupdate', () => {
+            const currentTime = player.currentTime;
+
+            lines.forEach((line) => {
+                const startTime = parseFloat(line.getAttribute('data-start'));
+                const nextElement = line.nextElementSibling;
+                // Jika element berikutnya bukan kesimpulan, ambil start-nya
+                const endTime = (nextElement && nextElement.classList.contains('lyric-line')) 
+                                ? parseFloat(nextElement.getAttribute('data-start')) 
+                                : 999;
+
+                if (currentTime >= startTime && currentTime < endTime) {
+                    if (!line.classList.contains('active')) {
+                        line.classList.add('active');
+                        line.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                } else {
+                    line.classList.remove('active');
+                }
+            });
+        });
+
+        // Trigger saat suara habis
+        player.addEventListener('ended', () => {
+            // Memudarkan teks lama agar fokus ke kesimpulan
+            lyricsContainer.style.opacity = '0.2';
+            lyricsContainer.style.transition = 'opacity 2s ease';
+            
+            // Memunculkan kesimpulan
+            conclusion.classList.add('show');
+            
+            // Scroll ke kesimpulan
+            setTimeout(() => {
+                conclusion.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 500);
+        });
+    </script>
+
+</body>
+</html>
